@@ -1,42 +1,277 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: white;
+  font-family: 'Poppins', sans-serif;
+}
+
+.home-page {
+  min-height: 95vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5em;
+  padding: 20px;
+}
+
+.expense-banner {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; 
+  align-items: center; 
+  width: 100vw;
+  min-width: 90%;
+  height: 80vh;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  padding: 40px 20px;
+  box-sizing: border-box;
+}
+
+.topbar-1 {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.topbar-1 nav {
+  width: 100%;
+  max-width: 1200px;
+  height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: rgb(64, 64, 240);
+  border-radius: 8px;
+  padding: 0 20px;
+}
+
+.topbar-options {
+  display: flex;
+  gap: 15px;
+}
+
+.topbar-options button {
+  all: unset;
+  width: 130px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  background: rgb(64, 64, 240);
+  color: white;
+  cursor: pointer;
+  padding: 10px 20px;
+  border-radius: 8px;
+  transition: all 0.3s ease-in-out;
+}
+
+.topbar-options button:hover {
+  background: rgba(64, 64, 240, 0.8);
+}
+
+.expense-banner-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; 
+  gap: 2.5em;
+  align-items: center;
+  width: 100%;
+  padding: 40px 20px;
+}
+
+.banner-content {
+  color: black;
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5em;
+  max-width: 400px;
+  text-align: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.banner-content h2 {
+  font-weight: 700;
+  font-size: 28px;
+  color: rgb(64, 64, 240);
+}
+
+.banner-content p {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #333;
+}
+
+.banner-img {
+  width: 100%;
+  max-width: 600px;
+  height: 500px;
+  background-image: url('./assets/home-banner.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  border-radius: 10px;
+}
+
+.expense-about {
+  width: 90%;
+  height: auto;
+  max-height: 600px;
+  border-radius: 10px;
+  background-color: rgb(64, 64, 240);
+  color: white;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly; 
+  align-items: center; 
+  font-family: 'Poppins', sans-serif;
+  padding: 40px 20px;
+  box-sizing: border-box;
+}
+
+.expense-about-content {
+  width: 100%;
+  max-width: 500px;
+  height: 400px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; 
+  align-items: center; 
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.expense-about-content h2 {
+  font-weight: 700;
+  font-size: 28px;
+  color: white;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+.expense-about-content p {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #f2f2f2;
+}
+
+.expense-about-img {
+  width: 100%;
+  max-width: 400px;
+  height: 400px;
+  border-radius: 10px;
+  background-image: url('./assets/about.jpg');
+  background-size: cover;
+  background-position: center;
+}
+.footer {
+  width: 95%;
+  background-color: rgb(64, 64, 240);
+  color: white;
+  padding: 20px 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; 
+  align-items: center; 
+  font-family: 'Poppins', sans-serif;
+  border-radius: 10px;
+}
+
+.footer-container {
+  width: 90%;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.footer-logo h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.footer-links {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.footer-links a {
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
+}
+
+.footer-social {
+  display: flex;
+  gap: 15px;
+}
+
+.footer-social a {
+  color: white;
+  font-size: 20px;
+  transition: 0.3s;
+}
+
+.footer-social a:hover {
+  color: lightgray;
+}
+
+.footer-copy {
+  font-size: 14px;
+  margin-top: 10px;
+  color: #f2f2f2;
+}
+
+@media (min-width: 768px) {
+  .footer-container {
+    flex-direction: row;
+    justify-content: space-between;
   }
-  to {
-    transform: rotate(360deg);
+}
+
+@media screen and (max-width: 768px) {
+  .expense-banner-content {
+    flex-direction: column;
+    gap: 2em;
   }
-}
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+  .banner-img {
+    max-width: 100%;
+    height: auto;
   }
-}
 
-.card {
-  padding: 2em;
-}
+  .expense-about {
+    flex-direction: column;
+    height: auto;
+  }
 
-.read-the-docs {
-  color: #888;
+  .expense-about-content {
+    width: 80%;
+    padding: 20px;
+  }
+
+  .expense-about-img {
+    max-width: 80%;
+    height: auto;
+  }
 }
