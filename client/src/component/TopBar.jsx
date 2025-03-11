@@ -2,14 +2,10 @@ import React from 'react'
 
 function TopBar() {
   return (
-    <div className="topbar-1">
-      <nav>
-          <h1>Expense Meter</h1>
-          <div className="topbar-options">
-            <button>Log in</button>
-          </div>
-       </nav>
-    </div>
+    <nav className="topbar-1">
+      <h1>Expense Meter</h1>
+      <button>Log in</button>
+    </nav>
   )
 }
 

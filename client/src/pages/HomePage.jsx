@@ -25,10 +25,10 @@ Whether you're a small startup or a large enterprise, our platform helps organiz
         </div>
         <div className="expense-about-img"></div>
       </div>
-      <Footer/>
       <div className='expense-features'>
 
       </div>
+      <Footer/>
     </div>
   )
 }
