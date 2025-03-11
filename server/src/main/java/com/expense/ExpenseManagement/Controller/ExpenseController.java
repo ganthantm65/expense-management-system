@@ -1,4 +1,4 @@
-package com.expense.ExpenseManagement.ExpenseController;
+package com.expense.ExpenseManagement.Controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
