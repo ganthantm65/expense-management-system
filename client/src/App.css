@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 body {
   background-color: white;
-  font-family: 'poppins', sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 * {
   margin: 0;
@@ -12,7 +12,7 @@ body {
   width: 100%;
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
   color: black;
   padding: 20px;
@@ -22,6 +22,13 @@ body {
 }
 .topbar-1  h1{
   font-size: 50px;
+}
+.topbar-1 div{
+  width: 400px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
 }
 .topbar-1 button {
   all: unset;
@@ -63,9 +70,7 @@ body {
 
 .expense-banner h1 {
   font-size: 60px;
-  font-weight: 700;
   color: white;
-  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
 }
 
 .expense-banner-content {
@@ -73,7 +78,7 @@ body {
   height: 550px;
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: space-evenly;
   align-items: center;
   padding: 0 20px;
 }
@@ -91,7 +96,7 @@ body {
   background-size: cover;
 }
 .expense-about {
-  width: 100vw;
+  width: 80vw;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -152,7 +157,37 @@ body {
   font-weight: 600;
   margin-top: 50px;
 }
-
+.expense-choice{
+  width: 400px;
+  height: 600px;
+  position: absolute;
+  top: 5%;
+  left: 35%;
+  display:flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  gap: 2em;
+  align-items: center;
+  font-family: 'Poppins',sans-serif;
+}
+.expense-choice div{
+  width: 250px;
+  height: 50px;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  font-size: 25px;
+  border-radius: 10px;
+  padding: 10px;
+  transition: 0.33s ease-in-out;
+  background-color: #2c57f2;
+  color: white;
+  cursor: pointer;
+}
+.expense-choice div:hover{
+  transition: 0.33s ease-in-out;
+  transform: scale(1.1,1.1);
+}
 @media screen and (max-width: 768px) {
   .expense-banner {
     height: 60vh;
