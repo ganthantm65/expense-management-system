@@ -34,6 +34,7 @@ public class ExpenseConfigration {
                         .anyRequest().authenticated()
                 )
                 .formLogin(Customizer.withDefaults());
+        http.oauth2Login(Customizer.withDefaults());
 
         return http.build();
     }
