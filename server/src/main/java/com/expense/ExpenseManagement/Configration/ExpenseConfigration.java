@@ -14,7 +14,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import java.net.HttpRetryException;
 import java.util.List;
 
 @Configuration
@@ -30,11 +29,13 @@ public class ExpenseConfigration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/admin/login", "/admin/register","/employee/login","/employee/register").permitAll()
+                        .requestMatchers(
+                                "/admin/**",
+                                "/employee/**",
+                                "/otp/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(Customizer.withDefaults());
-        http.oauth2Login(Customizer.withDefaults());
 
         return http.build();
     }

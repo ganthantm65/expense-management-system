@@ -18,7 +18,7 @@ function Choice() {
         <p>Manager</p>
         <FontAwesomeIcon icon={faPeopleRoof}/>
       </div>
-      <div>
+      <div onClick={()=>navigate('/admin/login')}>
         <p>Admin</p>
         <FontAwesomeIcon icon={faScrewdriverWrench}/>
       </div>
