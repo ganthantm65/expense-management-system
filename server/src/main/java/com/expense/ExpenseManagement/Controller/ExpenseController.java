@@ -2,12 +2,10 @@ package com.expense.ExpenseManagement.Controller;
 
 import com.expense.ExpenseManagement.Model.Admin;
 import com.expense.ExpenseManagement.Model.Employee;
-import com.expense.ExpenseManagement.Model.EmployeeResponse;
 import com.expense.ExpenseManagement.Repository.OtpUtil;
 import com.expense.ExpenseManagement.Service.AdminService;
 import com.expense.ExpenseManagement.Service.EmployeeService;
 import com.expense.ExpenseManagement.Service.MailService;
-import com.expense.ExpenseManagement.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,7 +13,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -65,8 +62,7 @@ public class ExpenseController {
                 return ResponseEntity.status(401).body("Invalid Credential");
             }
             Employee employee1=employeeService.findByEmail(employee.getEmail());
-            EmployeeResponse response =new EmployeeResponse(employee1.getEmail(),employee1.getEmployeeName(),employee1.getDepartment(),employee1.getDesignation(),employee1.getExpenses());
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(employee1);
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(401).body("Invalid credentials");
         } catch (Exception e) {

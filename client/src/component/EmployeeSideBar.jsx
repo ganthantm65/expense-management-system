@@ -5,14 +5,16 @@ function EmployeeSidebar() {
   return (
     <div className="sidebar">
       <div className="logo">
-        <h2>Company</h2>
+        <h2>Expense Meter</h2>
       </div>
       <nav>
         <ul>
-          <li>Dashboard</li>
-          <li>My Profile</li>
-          <li>Expenses</li>
-          <li><Link to="/">Logout</Link></li>
+          <li><Link to="/employee/dashboard">Dashboard</Link></li>
+          <li><Link to="/employee/profile">My Profile</Link></li>
+          <li><Link to="/employee/expense">Expenses</Link></li>
+          <li><Link to="/" onClick={()=>{
+            localStorage.clear()
+          }}>Logout</Link></li>
         </ul>
       </nav>
     </div>

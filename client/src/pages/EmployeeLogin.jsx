@@ -31,7 +31,7 @@ function EmployeeLogin() {
             if (!response.ok) {
                 throw new Error(data.message || 'Login failed');
             }else{
-                localStorage.setItem("data",data)
+                localStorage.setItem("data",JSON.stringify(data))
                 navigate('/employee/dashboard')
             }
 
