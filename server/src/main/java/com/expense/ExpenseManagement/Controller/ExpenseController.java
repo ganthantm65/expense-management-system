@@ -2,16 +2,20 @@ package com.expense.ExpenseManagement.Controller;
 
 import com.expense.ExpenseManagement.Model.Admin;
 import com.expense.ExpenseManagement.Model.Employee;
+import com.expense.ExpenseManagement.Model.EmployeeResponse;
 import com.expense.ExpenseManagement.Repository.OtpUtil;
 import com.expense.ExpenseManagement.Service.AdminService;
 import com.expense.ExpenseManagement.Service.EmployeeService;
 import com.expense.ExpenseManagement.Service.MailService;
+import com.expense.ExpenseManagement.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -22,10 +26,8 @@ import java.util.Map;
 public class ExpenseController {
     @Autowired
     private AdminService adminService;
-
     @Autowired
     private EmployeeService employeeService;
-
     @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -54,21 +56,25 @@ public class ExpenseController {
         }
     }
     @PostMapping("employee/login")
-    public ResponseEntity<?> validateUser(@RequestBody  Employee employee) {
+    public ResponseEntity<?> validateUser(@RequestBody Employee employee) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(employee.getEmail(), employee.getPassword())
             );
-
-            if (authentication.isAuthenticated()) {
-                return ResponseEntity.ok(employeeService.loadUserByUsername(employee.getEmail()));
-            } else {
-                return ResponseEntity.status(401).body("Invalid Credentials");
+            if (!authentication.isAuthenticated()){
+                return ResponseEntity.status(401).body("Invalid Credential");
             }
-        } catch (AuthenticationException e) {
-            return ResponseEntity.status(401).body("Invalid Credentials");
+            Employee employee1=employeeService.findByEmail(employee.getEmail());
+            EmployeeResponse response =new EmployeeResponse(employee1.getEmail(),employee1.getEmployeeName(),employee1.getDepartment(),employee1.getDesignation(),employee1.getExpenses());
+            return ResponseEntity.ok(response);
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(401).body("Invalid credentials");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("An error occurred: " + e.getMessage());
         }
     }
+
 
     @PostMapping("/admin/register")
     public Admin registerAdmin(@RequestBody Admin admin) {

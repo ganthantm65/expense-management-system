@@ -3,6 +3,7 @@ package com.expense.ExpenseManagement.Service;
 import com.expense.ExpenseManagement.Model.Admin;
 import com.expense.ExpenseManagement.Repository.AdminRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

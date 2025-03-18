@@ -6,6 +6,9 @@ import EmployeeLogin from '../pages/EmployeeLogin'
 import AdminLogin from '../pages/AdminLogin'
 import ForgotPassword from '../pages/ForgotPassword'
 import OtpVerifcation from '../pages/OtpVerifcation'
+import EmployeeDashboard from '../pages/EmployeeDashBoard'
+import { Outlet } from 'react-router-dom'
+import OtpVerification from '../pages/OtpVerifcation'
 
 function LinkRouter() {
   return (
@@ -13,18 +16,14 @@ function LinkRouter() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/choice" element={<Choice />} />
-        
-        <Route path="/employee">
-          <Route path="login" element={<EmployeeLogin />} />
-        </Route>
-        <Route path='/admin'>
-          <Route path='login' element={<AdminLogin/>}/>
-        </Route>
-        <Route path='/forgot-password' element={<ForgotPassword/>}/>
-        <Route path='/otp-verify' element={<OtpVerifcation/>}/>
+        <Route path="/employee/login" element={<EmployeeLogin />} />
+        <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/otp-verify" element={<OtpVerification/>} />
       </Routes>
     </BrowserRouter>
   )
 }
 
-export default LinkRouter
+export default LinkRouter;

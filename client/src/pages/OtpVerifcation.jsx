@@ -10,9 +10,6 @@ function OtpVerification() {
       setOtp(value);
     }
   };
-  const verifyOTP=()=>{
-    
-  }
   return (
     <div className='otp-verify-container'>
       <h1>OTP Verification</h1>
