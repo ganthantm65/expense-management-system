@@ -2,6 +2,7 @@ package com.expense.ExpenseManagement.Controller;
 
 import com.expense.ExpenseManagement.Model.Admin;
 import com.expense.ExpenseManagement.Model.Employee;
+import com.expense.ExpenseManagement.Model.Expense;
 import com.expense.ExpenseManagement.Repository.OtpUtil;
 import com.expense.ExpenseManagement.Service.AdminService;
 import com.expense.ExpenseManagement.Service.EmployeeService;
@@ -14,17 +15,20 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @CrossOrigin
 @RestController
 public class ExpenseController {
+
     @Autowired
     private AdminService adminService;
+
     @Autowired
     private EmployeeService employeeService;
+
     @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -34,7 +38,7 @@ public class ExpenseController {
     @Autowired
     private OtpUtil otpUtil;
 
-    private Map<String,String> otpMap=new HashMap<>();
+    private Map<String, String> otpMap = new HashMap<>();
 
     @PostMapping("/admin/login")
     public ResponseEntity<?> validateAdmin(@RequestBody Admin admin) {
@@ -44,7 +48,8 @@ public class ExpenseController {
             );
 
             if (authentication.isAuthenticated()) {
-                return ResponseEntity.ok(adminService.loadUserByUsername(admin.getEmail()));
+                Admin authenticatedAdmin = adminService.findAdminByEmail(admin.getEmail());
+                return ResponseEntity.ok(authenticatedAdmin);
             } else {
                 return ResponseEntity.status(401).body("Invalid Credentials");
             }
@@ -52,60 +57,71 @@ public class ExpenseController {
             return ResponseEntity.status(401).body("Invalid Credentials");
         }
     }
-    @PostMapping("employee/login")
+
+    @PostMapping("/employee/login")
     public ResponseEntity<?> validateUser(@RequestBody Employee employee) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(employee.getEmail(), employee.getPassword())
             );
-            if (!authentication.isAuthenticated()){
-                return ResponseEntity.status(401).body("Invalid Credential");
+
+            if (authentication.isAuthenticated()) {
+                Employee authenticatedEmployee = employeeService.findEmployeeByEmail(employee.getEmail());
+                return ResponseEntity.ok(authenticatedEmployee);
+            } else {
+                return ResponseEntity.status(401).body("Invalid Credentials");
             }
-            Employee employee1=employeeService.findByEmail(employee.getEmail());
-            return ResponseEntity.ok(employee1);
         } catch (BadCredentialsException e) {
-            return ResponseEntity.status(401).body("Invalid credentials");
+            return ResponseEntity.status(401).body("Invalid Credentials");
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(500).body("An error occurred: " + e.getMessage());
         }
     }
 
-
     @PostMapping("/admin/register")
     public Admin registerAdmin(@RequestBody Admin admin) {
         return adminService.registerAdmin(admin);
     }
+
     @PostMapping("/employee/register")
-    public Employee registerEmployee(@RequestBody Employee employee){
+    public Employee registerEmployee(@RequestBody Employee employee) {
         return employeeService.registerEmployee(employee);
     }
+
     @PostMapping("/otp/send")
-    public ResponseEntity<?> sendOtpToMail(@RequestBody Admin admin){
+    public ResponseEntity<?> sendOtpToMail(@RequestBody Map<String, String> request) {
         try {
-            System.out.println("Received request to send OTP to: " + admin.getEmail());
+            String email = request.get("email");
             String otp = otpUtil.generateOtp();
-            otpMap.put(admin.getEmail(),otp);
-            System.out.println("Generated OTP: " + otp);
-            mailService.sendMail(admin.getEmail(), otp);
+            otpMap.put(email, otp);
+            mailService.sendMail(email, otp);
             return ResponseEntity.ok("OTP sent");
         } catch (Exception e) {
-            System.err.println("Error sending OTP: " + e.getMessage());
             return ResponseEntity.status(500).body("Error sending OTP");
         }
     }
+
     @PostMapping("/otp/verify")
     public ResponseEntity<?> verifyOtp(@RequestBody Map<String, String> request) {
         String email = request.get("email");
         String otp = request.get("otp");
 
-        System.out.println("OTP Map: " + otpMap);
-
         if (otpMap.containsKey(email) && otpMap.get(email).equals(otp)) {
             otpMap.remove(email);
-            return ResponseEntity.ok("Your OTP is verified successfully");
+            return ResponseEntity.ok("OTP verified successfully");
         } else {
             return ResponseEntity.status(401).body("Invalid OTP");
         }
+    }
+
+    @PostMapping("/employee/expense/{employeeName}")
+    public Employee addExpenses(@PathVariable String employeeName, @RequestBody List<Expense> expenses) {
+        return employeeService.addExpenses(employeeName, expenses);
+    }
+
+    @PutMapping("/employee/expense/{employeeName}")
+    public Employee updateAllExpenses(@PathVariable String employeeName, @RequestBody List<Expense> updatedExpenses) {
+        return employeeService.updateAllExpenses(employeeName, updatedExpenses);
     }
 }

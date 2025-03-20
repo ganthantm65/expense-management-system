@@ -1,18 +1,15 @@
 package com.expense.ExpenseManagement.Service;
 
 import com.expense.ExpenseManagement.Model.Employee;
+import com.expense.ExpenseManagement.Model.Expense;
 import com.expense.ExpenseManagement.Repository.EmployeeRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.util.List;
 
 @Service
-@Primary
-public class EmployeeService implements UserDetailsService {
+public class EmployeeService {
 
     @Autowired
     private EmployeeRepo employeeRepo;
@@ -20,26 +17,30 @@ public class EmployeeService implements UserDetailsService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    @Override
-    public UserDetails loadUserByUsername(String email) {
-        Employee employee = employeeRepo.findByEmail(email);
-        if (employee == null) {
-            throw new RuntimeException("User not found");
-        }
-
-        return User.builder()
-                .username(employee.getEmail())
-                .password(employee.getPassword())
-                .roles("EMPLOYEE")
-                .build();
-    }
-
     public Employee registerEmployee(Employee employee) {
         employee.setPassword(passwordEncoder.encode(employee.getPassword()));
         return employeeRepo.save(employee);
     }
 
-    public Employee findByEmail(String email) {
+    public Employee findEmployeeByEmail(String email) {
         return employeeRepo.findByEmail(email);
+    }
+
+    public Employee addExpenses(String employeeName, List<Expense> newExpenses) {
+        Employee employee = employeeRepo.findByEmployeeName(employeeName);
+        if (employee == null) {
+            throw new RuntimeException("Employee not found: " + employeeName);
+        }
+        employee.setExpenses(newExpenses);
+        return employeeRepo.save(employee);
+    }
+
+    public Employee updateAllExpenses(String employeeName, List<Expense> updatedExpenses) {
+        Employee employee = employeeRepo.findByEmployeeName(employeeName);
+        if (employee == null) {
+            throw new RuntimeException("Employee not found: " + employeeName);
+        }
+        employee.setExpenses(updatedExpenses);
+        return employeeRepo.save(employee);
     }
 }

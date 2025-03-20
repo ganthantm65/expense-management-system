@@ -6,6 +6,11 @@ import { faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
 import '../App.css';
 
 function EmployeeExpense() {
+  const [employeeName, setEmployeeName] = useState(() => {
+    const storedData = localStorage.getItem("data");
+    return storedData ? JSON.parse(storedData).employeeName || "" : "";
+  });
+
   const [employeeData, setEmployeeData] = useState(() => {
     const storedData = localStorage.getItem("data");
     if (storedData) {
@@ -14,7 +19,7 @@ function EmployeeExpense() {
         expenses: parsedData.expenses.map(expense => ({
           ...expense,
           id: expense.id || Date.now() + Math.random(),
-        }))
+        })),
       };
     }
     return { expenses: [] };
@@ -32,21 +37,29 @@ function EmployeeExpense() {
   const handleCloseModal = () => setShowModal(false);
 
   const onUpdate = (id, field, value) => {
-    if (!id) return;
     const updatedExpenses = employeeData.expenses.map(expense =>
       expense.id === id ? { ...expense, [field]: value } : expense
     );
-    const updatedData = { ...employeeData, expenses: updatedExpenses };
-    setEmployeeData(updatedData);
-    localStorage.setItem("data", JSON.stringify(updatedData));
+    setEmployeeData({ expenses: updatedExpenses });
+
+    fetch(`/employee/expense/${employeeName}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ expenses: updatedExpenses }),
+    })
+      .catch(error => console.error("Error updating expense:", error));
   };
 
   const onDelete = (id) => {
-    if (!id) return;
     const filteredExpenses = employeeData.expenses.filter(expense => expense.id !== id);
-    const updatedData = { ...employeeData, expenses: filteredExpenses };
-    setEmployeeData(updatedData);
-    localStorage.setItem("data", JSON.stringify(updatedData));
+    setEmployeeData({ expenses: filteredExpenses });
+
+    fetch(`/employee/expense/${employeeName}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ expenses: filteredExpenses }),
+    })
+      .catch(error => console.error("Error deleting expense:", error));
   };
 
   const handleAddExpense = () => {
@@ -55,19 +68,23 @@ function EmployeeExpense() {
       return;
     }
 
-    const expenseToAdd = {
-      id: Date.now() + Math.random(),
-      category: newExpense.category,
-      amount: parseFloat(newExpense.amount),
-      description: newExpense.description,
-      dateOfExpense: newExpense.dateOfExpense,
+    const expenseToAdd = { 
+      ...newExpense, 
+      amount: parseFloat(newExpense.amount) 
     };
 
-    const updatedData = { ...employeeData, expenses: [...employeeData.expenses, expenseToAdd] };
-    setEmployeeData(updatedData);
-    localStorage.setItem("data", JSON.stringify(updatedData));
-    setShowModal(false);
-    setNewExpense({ category: '', amount: '', description: '', dateOfExpense: '' });
+    fetch(`/employee/expense/${employeeName}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(expenseToAdd),
+    })
+      .then(response => response.json())
+      .then(data => {
+        setEmployeeData(prevData => ({ expenses: [...prevData.expenses, data] }));
+        setShowModal(false);
+        setNewExpense({ category: '', amount: '', description: '', dateOfExpense: '' });
+      })
+      .catch(error => console.error("Error adding expense:", error));
   };
 
   return (

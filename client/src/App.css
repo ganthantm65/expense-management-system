@@ -678,8 +678,9 @@ body {
 }
 
 .table-wrapper {
-  width: 100%;
-  overflow-x: auto;
+  width: 82vw;
+  max-height: 75vh;
+  overflow-y: auto;
   margin-top: 20px;
 }
 
@@ -782,6 +783,7 @@ body {
   padding: 8px 16px;
   border-radius: 5px;
   font-size: 14px;
+  color: white;
 }
 
 .modal-footer .btn-primary {
