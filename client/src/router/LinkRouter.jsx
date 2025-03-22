@@ -11,6 +11,10 @@ import { Outlet } from 'react-router-dom'
 import OtpVerification from '../pages/OtpVerifcation'
 import EmployeExpense from '../pages/EmployeExpense'
 import EmployeeProfile from '../pages/EmployeeProfile'
+import EmployeeSearchProfile from '../pages/EmployeeSearchProfile'
+import AdminDashboard from '../pages/AdminDashBoard'
+import EmployeeList from '../pages/EmployeeList'
+import EmployeeAdd from '../pages/EmployeeAdd'
 
 function LinkRouter() {
   return (
@@ -25,6 +29,10 @@ function LinkRouter() {
         <Route path="/otp-verify" element={<OtpVerification/>} />
         <Route path='/employee/expense' element={<EmployeExpense/>}/>
         <Route path='/employee/profile' element={<EmployeeProfile/>}/>
+        <Route path='/admin/dashboard' element={<AdminDashboard/>}/>
+        <Route path='/admin/employee-profile' element={<EmployeeSearchProfile/>}/>
+        <Route path='/admin/employees' element={<EmployeeList/>}/>
+        <Route path='/admin/addEmployee' element={<EmployeeAdd/>}/>
       </Routes>
     </BrowserRouter>
   )

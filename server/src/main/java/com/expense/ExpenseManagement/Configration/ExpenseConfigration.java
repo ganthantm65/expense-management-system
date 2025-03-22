@@ -29,9 +29,11 @@ public class ExpenseConfigration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationProvider authenticationProvider) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/admin/login", "/employee/login", "/admin/register", "/employee/register", "/otp/**").permitAll()
+                        .requestMatchers("/admin/login", "/employee/login", "/admin/register", "/employee/register").permitAll()
+                        .requestMatchers("/employee/expense", "/employee/getEmployees", "/admin/getAdmin").permitAll() // Require authentication
                         .anyRequest().authenticated()
                 )
+
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )

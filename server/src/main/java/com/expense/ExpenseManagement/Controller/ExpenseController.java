@@ -115,13 +115,59 @@ public class ExpenseController {
         }
     }
 
-    @PostMapping("/employee/expense/{employeeName}")
-    public Employee addExpenses(@PathVariable String employeeName, @RequestBody List<Expense> expenses) {
-        return employeeService.addExpenses(employeeName, expenses);
+    @PostMapping("/employee/expense")
+    public ResponseEntity<Map<String, Object>> addExpenses(@RequestBody Employee employee) {
+        try {
+            Employee updatedEmployee = employeeService.addExpenses(employee.getEmployeeName(), employee.getExpenses());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", "success");
+            response.put("message", "Expenses added successfully");
+            response.put("employee", updatedEmployee);
+
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("status", "error");
+            errorResponse.put("message", e.getMessage());
+
+            return ResponseEntity.status(404).body(errorResponse);
+        }
+
     }
 
-    @PutMapping("/employee/expense/{employeeName}")
-    public Employee updateAllExpenses(@PathVariable String employeeName, @RequestBody List<Expense> updatedExpenses) {
-        return employeeService.updateAllExpenses(employeeName, updatedExpenses);
+    @PutMapping("/employee/expense")
+    public ResponseEntity<Map<String, Object>> updateAllExpenses(@RequestBody Employee employee) {
+        try {
+            Employee updatedEmployee = employeeService.updateAllExpenses(employee.getEmployeeName(), employee.getExpenses());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", "success");
+            response.put("message", "Expenses added successfully");
+            response.put("employee", updatedEmployee);
+
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("status", "error");
+            errorResponse.put("message", e.getMessage());
+
+            return ResponseEntity.status(404).body(errorResponse);
+        }
+    }
+
+    @GetMapping("/employee/getEmployees")
+    public List<Employee> getEmployees(){
+        return employeeService.getEmployeeData();
+    }
+
+    @GetMapping("/admin/getAdmin")
+    public List<Admin> getAdmin(){
+        return adminService.getAdminDatas();
+    }
+
+    @GetMapping("/employee/{employeeName}")
+    public Employee getEmployeeByName(@PathVariable String employeeName){
+        return employeeService.getEmployeeByName(employeeName);
     }
 }

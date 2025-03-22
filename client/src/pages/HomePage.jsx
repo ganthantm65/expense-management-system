@@ -13,7 +13,8 @@ function HomePage() {
             <h1>Spend Smart</h1>
             <h1>Save more</h1>
           </div>
-          <div className="banner-img"></div>
+          <div className="banner-img">
+          </div>
         </div>
       </div>
       <div className="expense-about">

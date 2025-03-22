@@ -43,4 +43,14 @@ public class EmployeeService {
         employee.setExpenses(updatedExpenses);
         return employeeRepo.save(employee);
     }
+
+    public List<Employee> getEmployeeData(){
+        List<Employee> employees=employeeRepo.findAll();
+
+        return  employees;
+    }
+
+    public Employee getEmployeeByName(String employeeName){
+        return employeeRepo.findByEmployeeName(employeeName);
+    }
 }

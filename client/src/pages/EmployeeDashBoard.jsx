@@ -23,7 +23,7 @@ function EmployeeDashboard() {
       <EmployeeSidebar />
       <div className="main-content">
         <EmployeeTopNav />
-        <div className="dashboard-content">
+        <div className="employee-dashboard-content">
           <h2>Welcome to the Employee Dashboard</h2>
           <div className="metrics">
             <div className="metric-card">

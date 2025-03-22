@@ -1,7 +1,7 @@
 import { faEyeSlash, faLock, faUser } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'  
+import { Link, useNavigate } from 'react-router-dom'  
 import '../App.css'
 
 function AdminLogin() {
@@ -9,6 +9,8 @@ function AdminLogin() {
     const [password, setPassword] = useState('');
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [loader,setLoader]=useState(false)
+
+    const navigate=useNavigate();
 
     const updateEmail = (event) => {
         setEmail(event.target.value);
@@ -32,7 +34,9 @@ function AdminLogin() {
             }
             let response = await fetch(url, options);
             let data = await response.json();
-            console.log(data);
+            if(data){
+                navigate('/admin/dashboard');
+            }
         } catch (error) {
             console.log(error);
         } finally{
