@@ -1,21 +1,49 @@
 package com.expense.ExpenseManagement.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.annotation.Nullable;
+import jakarta.persistence.*;
 import lombok.Data;
 
-@Data
-public class Expense {
-    private String Category;
-    private double amount;
-    private String description;
-    private String dateOfExpense;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-    @Override
-    public String toString() {
-        return "Expense{" +
-                "Category='" + Category + '\'' +
-                ", amount=" + amount +
-                ", description='" + description + '\'' +
-                ", dateOfExpense='" + dateOfExpense + '\'' +
-                '}';
-    }
+@Data
+@Entity
+@Table(name = "expense")
+public class Expense {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long expenseId;
+
+    @ManyToOne
+    @JoinColumn(name = "employee_id")
+    private Employee employee;
+
+    private String category;
+
+    private BigDecimal amount;
+
+    private String description;
+
+    private LocalDate expenseDate;
+
+    @Enumerated(EnumType.STRING)
+    private ExpenseStatus status;
+
+    private String receiptUrl;
+
+    @ManyToOne
+    @JoinColumn(name = "approved_by")
+    private Admin approvedBy;
+
+    private LocalDateTime approvedDate;
+
+    private String remarks;
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
 }

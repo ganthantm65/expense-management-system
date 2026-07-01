@@ -13,14 +13,11 @@ import org.springframework.stereotype.Service;
 public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired
-    private EmployeeService employeeService;
-
-    @Autowired
-    private AdminService adminService;
+    private AuthService authService;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Employee employee = employeeService.findEmployeeByEmail(email);
+        Employee employee = authService.findEmployeeByEmail(email);
         if (employee != null) {
             return User.builder()
                     .username(employee.getEmail())
@@ -29,7 +26,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                     .build();
         }
 
-        Admin admin = adminService.findAdminByEmail(email);
+        Admin admin = authService.findAdminByEmail(email);
         if (admin != null) {
             return User.builder()
                     .username(admin.getEmail())

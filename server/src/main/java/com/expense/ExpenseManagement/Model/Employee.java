@@ -18,8 +18,10 @@ public class Employee {
     private String employeeName;
     private String email;
     private String password;
-    private String Department;
+    private String department;
     private String designation;
+    private String phone;
+    private String status;
 
     @JdbcTypeCode(SqlTypes.JSON)
     private List<Expense> expenses=new ArrayList<>();

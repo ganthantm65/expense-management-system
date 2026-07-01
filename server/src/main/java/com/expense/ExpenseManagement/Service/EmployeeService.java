@@ -1,12 +1,13 @@
 package com.expense.ExpenseManagement.Service;
 
+
 import com.expense.ExpenseManagement.Model.Employee;
-import com.expense.ExpenseManagement.Model.Expense;
 import com.expense.ExpenseManagement.Repository.EmployeeRepo;
+import com.expense.ExpenseManagement.dto.EmployeeProfile;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.util.List;
+
+import java.util.*;
 
 @Service
 public class EmployeeService {
@@ -14,43 +15,107 @@ public class EmployeeService {
     @Autowired
     private EmployeeRepo employeeRepo;
 
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+    public EmployeeProfile getEmployeeProfile(String email) throws Exception{
+        Employee employee=employeeRepo.findByEmail(email);
 
-    public Employee registerEmployee(Employee employee) {
-        employee.setPassword(passwordEncoder.encode(employee.getPassword()));
-        return employeeRepo.save(employee);
-    }
-
-    public Employee findEmployeeByEmail(String email) {
-        return employeeRepo.findByEmail(email);
-    }
-
-    public Employee addExpenses(String employeeName, List<Expense> newExpenses) {
-        Employee employee = employeeRepo.findByEmployeeName(employeeName);
-        if (employee == null) {
-            throw new RuntimeException("Employee not found: " + employeeName);
+        if (employee==null){
+            throw new Exception("Employee Not Found");
         }
-        employee.setExpenses(newExpenses);
-        return employeeRepo.save(employee);
+
+        EmployeeProfile employeeProfile=new EmployeeProfile();
+
+        employeeProfile.setEmployeeName(employee.getEmployeeName());
+        employeeProfile.setEmail(employee.getEmail());
+        employeeProfile.setDepartment(employee.getDepartment());
+        employeeProfile.setPhone(employee.getPhone());
+        employeeProfile.setId(employee.getId());
+        employeeProfile.setDesignation(employee.getDesignation());
+        employeeProfile.setStatus(employee.getStatus());
+
+        return employeeProfile;
     }
 
-    public Employee updateAllExpenses(String employeeName, List<Expense> updatedExpenses) {
-        Employee employee = employeeRepo.findByEmployeeName(employeeName);
+    public Map<String, String> updateProfile(EmployeeProfile employeeProfile) throws Exception {
+
+        Employee employee = employeeRepo.findByEmail(employeeProfile.getEmail());
+
         if (employee == null) {
-            throw new RuntimeException("Employee not found: " + employeeName);
+            throw new Exception("Employee Not Found");
         }
-        employee.setExpenses(updatedExpenses);
-        return employeeRepo.save(employee);
+
+        if (employeeProfile.getEmployeeName() != null) {
+            employee.setEmployeeName(employeeProfile.getEmployeeName());
+        }
+
+        if (employeeProfile.getPhone() != null) {
+            employee.setPhone(employeeProfile.getPhone());
+        }
+
+        if (employeeProfile.getDepartment() != null) {
+            employee.setDepartment(employeeProfile.getDepartment());
+        }
+
+        if (employeeProfile.getDesignation() != null) {
+            employee.setDesignation(employeeProfile.getDesignation());
+        }
+
+        if (employeeProfile.getStatus() != null) {
+            employee.setStatus(employeeProfile.getStatus());
+        }
+
+        employeeRepo.save(employee);
+
+        return Map.of("message", "Updated Successfully");
     }
 
-    public List<Employee> getEmployeeData(){
+    public List<EmployeeProfile> getAllEmployeeProfiles(){
+        List<EmployeeProfile> profiles=new ArrayList<>();
+
         List<Employee> employees=employeeRepo.findAll();
 
-        return  employees;
+        for (Employee employee:employees){
+            EmployeeProfile employeeProfile=new EmployeeProfile();
+
+            employeeProfile.setEmployeeName(employee.getEmployeeName());
+            employeeProfile.setEmail(employee.getEmail());
+            employeeProfile.setDepartment(employee.getDepartment());
+            employeeProfile.setPhone(employee.getPhone());
+            employeeProfile.setId(employee.getId());
+            employeeProfile.setDesignation(employee.getDesignation());
+            employeeProfile.setStatus(employee.getStatus());
+
+            profiles.add(employeeProfile);
+        }
+
+        return profiles;
     }
 
-    public Employee getEmployeeByName(String employeeName){
-        return employeeRepo.findByEmployeeName(employeeName);
+    public EmployeeProfile getEmployeeByName(String name)throws Exception{
+        Employee employee=employeeRepo.findByEmployeeName(name);
+        if (employee==null){
+            throw new Exception("Employee Not Found");
+        }
+        EmployeeProfile employeeProfile=new EmployeeProfile();
+
+        employeeProfile.setEmployeeName(employee.getEmployeeName());
+        employeeProfile.setEmail(employee.getEmail());
+        employeeProfile.setDepartment(employee.getDepartment());
+        employeeProfile.setPhone(employee.getPhone());
+        employeeProfile.setId(employee.getId());
+        employeeProfile.setDesignation(employee.getDesignation());
+        employeeProfile.setStatus(employee.getStatus());
+        return employeeProfile;
     }
+
+    public Map<String,String> updatedEmployeeStatus(int id,String status)throws Exception{
+        Employee employee=employeeRepo.findById(id);
+        if (employee==null){
+            throw new Exception("Employee Not Found");
+        }
+        employee.setStatus(status);
+
+        return Map.of("message","Status Updated Successfully");
+    }
+
+
 }

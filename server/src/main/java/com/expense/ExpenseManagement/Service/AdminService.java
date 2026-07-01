@@ -12,26 +12,4 @@ import java.util.List;
 @Service
 public class AdminService {
 
-    @Autowired
-    private AdminRepo adminRepo;
-
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
-
-    public Admin registerAdmin(Admin admin) {
-        admin.setPassword(passwordEncoder.encode(admin.getPassword()));
-        return adminRepo.save(admin);
-    }
-
-    public Admin findAdminByEmail(String email) {
-        return adminRepo.findByEmail(email);
-    }
-
-    public List<Admin> getAdminDatas(){
-        return adminRepo.findAll();
-    }
-
-    public Admin getEmployeeByName(String employeeName){
-        return adminRepo.findByAdminName(employeeName);
-    }
 }
