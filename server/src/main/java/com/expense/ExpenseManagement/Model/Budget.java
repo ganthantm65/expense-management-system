@@ -9,17 +9,22 @@ import java.time.LocalDateTime;
 @Table(name = "budgets")
 @Data
 public class Budget {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer budget_id;
+    @Column(name = "budget_id")
+    private Integer budgetId;
 
     private String department;
 
-    private Double monthly_limit;
+    @Column(name = "monthly_limit")
+    private Double monthlyLimit;
 
-    private Double current_spent;
+    @Column(name = "current_spent")
+    private Double currentSpent;
 
-    private Double warning_limit;
+    @Column(name = "warning_limit")
+    private Double warningLimit;
 
     private String month;
 

@@ -23,9 +23,6 @@ public class Employee {
     private String phone;
     private String status;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    private List<Expense> expenses=new ArrayList<>();
-
     public Employee() {}
 
     @Override

@@ -10,6 +10,8 @@ import com.expense.ExpenseManagement.Repository.ExpenseRepo;
 import com.expense.ExpenseManagement.dto.ExpenseApproval;
 import com.expense.ExpenseManagement.dto.ExpenseRequest;
 import com.expense.ExpenseManagement.dto.ExpenseResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +34,9 @@ public class ExpenseService {
     @Autowired
     private AdminRepo adminRepo;
 
+    @Autowired
+    private  BudgetService budgetService;
+
     public ExpenseResponse createExpense(
             int employeeId,
             ExpenseRequest expenseRequest
@@ -46,6 +51,19 @@ public class ExpenseService {
 
         if (expenseRequest.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
             throw new RuntimeException("Amount must be greater than zero.");
+        }
+
+        boolean isBudgetAvailable = budgetService.validateBudget(
+                employee.getDepartment(),
+                expenseRequest.getExpenseDate().getMonthValue(),
+                expenseRequest.getExpenseDate().getYear(),
+                expenseRequest.getAmount().doubleValue()
+        );
+
+        if (!isBudgetAvailable) {
+            throw new RuntimeException(
+                    "Budget exceeded for department: " + employee.getDepartment()
+            );
         }
 
         expense.setEmployee(employee);
@@ -181,8 +199,8 @@ public class ExpenseService {
         return Map.of("message","Updated Successfully");
     }
 
-    public List<ExpenseResponse> getAllExpenses() {
-        return expenseRepo.getAllExpenses();
+    public Page<ExpenseResponse> getAllExpenses(Pageable pageable) {
+        return expenseRepo.getAllExpenses(pageable);
     }
 
     public ExpenseResponse getExpenseById(Long expenseId) throws Exception {
