@@ -14,7 +14,7 @@ import java.util.List;
 public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private int employeeId;
     private String employeeName;
     private String email;
     private String password;
@@ -28,7 +28,7 @@ public class Employee {
     @Override
     public String toString() {
         return "Employee{" +
-                "id=" + id +
+                "id=" + employeeId +
                 ", userName='" + employeeName + '\'' +
                 ", email='" + email + '\'' +
                 '}';

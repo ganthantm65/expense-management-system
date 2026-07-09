@@ -28,7 +28,7 @@ public class EmployeeService {
         employeeProfile.setEmail(employee.getEmail());
         employeeProfile.setDepartment(employee.getDepartment());
         employeeProfile.setPhone(employee.getPhone());
-        employeeProfile.setId(employee.getId());
+        employeeProfile.setId(employee.getEmployeeId());
         employeeProfile.setDesignation(employee.getDesignation());
         employeeProfile.setStatus(employee.getStatus());
 
@@ -80,7 +80,7 @@ public class EmployeeService {
             employeeProfile.setEmail(employee.getEmail());
             employeeProfile.setDepartment(employee.getDepartment());
             employeeProfile.setPhone(employee.getPhone());
-            employeeProfile.setId(employee.getId());
+            employeeProfile.setId(employee.getEmployeeId());
             employeeProfile.setDesignation(employee.getDesignation());
             employeeProfile.setStatus(employee.getStatus());
 
@@ -101,7 +101,7 @@ public class EmployeeService {
         employeeProfile.setEmail(employee.getEmail());
         employeeProfile.setDepartment(employee.getDepartment());
         employeeProfile.setPhone(employee.getPhone());
-        employeeProfile.setId(employee.getId());
+        employeeProfile.setId(employee.getEmployeeId());
         employeeProfile.setDesignation(employee.getDesignation());
         employeeProfile.setStatus(employee.getStatus());
         return employeeProfile;

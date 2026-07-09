@@ -10,12 +10,14 @@ import com.expense.ExpenseManagement.Repository.ExpenseRepo;
 import com.expense.ExpenseManagement.dto.ExpenseApproval;
 import com.expense.ExpenseManagement.dto.ExpenseRequest;
 import com.expense.ExpenseManagement.dto.ExpenseResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -35,42 +37,51 @@ public class ExpenseService {
     private AdminRepo adminRepo;
 
     @Autowired
-    private  BudgetService budgetService;
+    private BudgetService budgetService;
 
+    @Autowired
+    private AuditService auditService;
+
+    /*====================================================
+                    CREATE EXPENSE
+    ====================================================*/
+
+    @Transactional
     public ExpenseResponse createExpense(
-            int employeeId,
-            ExpenseRequest expenseRequest
-    )throws Exception{
-        Expense expense=new Expense();
+            Integer employeeId,
+            ExpenseRequest request
+    ) throws Exception {
 
-        Employee employee=employeeRepo.findById(employeeId);
+        Optional<Employee> employee = employeeRepo.findById(employeeId);
 
-        if(employee==null){
-            throw new Exception("Employee Not Found");
+        if (employee.get() == null) {
+            throw new RuntimeException("Employee not found");
         }
 
-        if (expenseRequest.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new RuntimeException("Amount must be greater than zero.");
+        if (request.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("Amount must be greater than zero");
         }
 
-        boolean isBudgetAvailable = budgetService.validateBudget(
-                employee.getDepartment(),
-                expenseRequest.getExpenseDate().getMonthValue(),
-                expenseRequest.getExpenseDate().getYear(),
-                expenseRequest.getAmount().doubleValue()
+        boolean available = budgetService.validateBudget(
+                employee.get().getDepartment(),
+                request.getExpenseDate().getMonthValue(),
+                request.getExpenseDate().getYear(),
+                request.getAmount().doubleValue()
         );
 
-        if (!isBudgetAvailable) {
+        if (!available) {
             throw new RuntimeException(
-                    "Budget exceeded for department: " + employee.getDepartment()
+                    "Department budget exceeded"
             );
         }
 
-        expense.setEmployee(employee);
-        expense.setAmount(expenseRequest.getAmount());
-        expense.setCategory(expenseRequest.getCategory());
-        expense.setDescription(expenseRequest.getDescription());
-        expense.setExpenseDate(expenseRequest.getExpenseDate());
+        Expense expense = new Expense();
+
+        expense.setEmployee(employee.get());
+        expense.setCategory(request.getCategory());
+        expense.setAmount(request.getAmount());
+        expense.setDescription(request.getDescription());
+        expense.setExpenseDate(request.getExpenseDate());
         expense.setStatus(ExpenseStatus.DRAFT);
         expense.setReceiptUrl(null);
         expense.setCreatedAt(LocalDateTime.now());
@@ -78,10 +89,19 @@ public class ExpenseService {
 
         expenseRepo.save(expense);
 
+        auditService.logExpenseAction(
+                expense,
+                null,
+                null,
+                ExpenseStatus.DRAFT,
+                "CREATED",
+                "Expense Created"
+        );
+
         ExpenseResponse response = new ExpenseResponse();
 
         response.setExpenseId(expense.getExpenseId());
-        response.setEmployeeName(employee.getEmployeeName());
+        response.setEmployeeName(employee.get().getEmployeeName());
         response.setCategory(expense.getCategory());
         response.setAmount(expense.getAmount());
         response.setDescription(expense.getDescription());
@@ -92,47 +112,91 @@ public class ExpenseService {
         return response;
     }
 
-    public Map<String, String> updateExpense(Long id, ExpenseRequest expenseRequest) {
+    /*====================================================
+                    UPDATE EXPENSE
+    ====================================================*/
 
-        Expense expense = expenseRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Expense not found"));
+    @Transactional
+    public Map<String,String> updateExpense(
+            Long expenseId,
+            ExpenseRequest request
+    ){
 
-        if (expense.getStatus() != ExpenseStatus.DRAFT) {
-            throw new RuntimeException("Only draft expenses can be updated.");
+        Expense expense = expenseRepo.findById(expenseId)
+                .orElseThrow(() ->
+                        new RuntimeException("Expense not found"));
+
+        if(expense.getStatus()!=ExpenseStatus.DRAFT){
+            throw new RuntimeException(
+                    "Only draft expenses can be updated."
+            );
         }
 
-        if (expenseRequest.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new RuntimeException("Amount must be greater than zero.");
+        if(request.getAmount().compareTo(BigDecimal.ZERO)<=0){
+            throw new RuntimeException(
+                    "Amount must be greater than zero."
+            );
         }
 
-        expense.setCategory(expenseRequest.getCategory());
-        expense.setAmount(expenseRequest.getAmount());
-        expense.setDescription(expenseRequest.getDescription());
-        expense.setExpenseDate(expenseRequest.getExpenseDate());
+        ExpenseStatus oldStatus = expense.getStatus();
+
+        expense.setCategory(request.getCategory());
+        expense.setAmount(request.getAmount());
+        expense.setDescription(request.getDescription());
+        expense.setExpenseDate(request.getExpenseDate());
         expense.setUpdatedAt(LocalDateTime.now());
 
         expenseRepo.save(expense);
 
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Expense updated successfully.");
+        auditService.logExpenseAction(
+                expense,
+                null,
+                oldStatus,
+                expense.getStatus(),
+                "UPDATED",
+                "Expense Updated"
+        );
 
-        return response;
+        return Map.of(
+                "message",
+                "Expense updated successfully."
+        );
     }
 
-    public Map<String,String> deleteExpense(Long expenseId) throws Exception{
-        Optional<Expense> expense=expenseRepo.findById(expenseId);
+    /*====================================================
+                    DELETE EXPENSE
+    ====================================================*/
 
-        if(expense==null){
-            throw new Exception("Expense Not Found");
+    @Transactional
+    public Map<String,String> deleteExpense(
+            Long expenseId
+    ){
+
+        Expense expense = expenseRepo.findById(expenseId)
+                .orElseThrow(() ->
+                        new RuntimeException("Expense not found"));
+
+        if(expense.getStatus()!=ExpenseStatus.DRAFT){
+            throw new RuntimeException(
+                    "Only draft expenses can be deleted."
+            );
         }
 
-        if(!(expense.get().getStatus()!=ExpenseStatus.DRAFT)){
-            throw new Exception("Expense is not applicable to deleted");
-        }
+        auditService.logExpenseAction(
+                expense,
+                null,
+                expense.getStatus(),
+                expense.getStatus(),
+                "DELETED",
+                "Expense Deleted"
+        );
 
-        expenseRepo.deleteById(expenseId);
+        expenseRepo.delete(expense);
 
-        return Map.of("message","Expense Deleted Successfully");
+        return Map.of(
+                "message",
+                "Expense deleted successfully."
+        );
     }
 
     public Map<String,String> submitExpense(Long expenseId) throws Exception{
@@ -149,54 +213,70 @@ public class ExpenseService {
         return Map.of("message","Submitted Successfully");
     }
 
-    public Map<String,String > approveExpense(
+    public Map<String, String> approveExpense(
             Long expenseId,
             Long adminId,
             ExpenseApproval expenseApproval
-    ) throws Exception{
-        Optional<Expense> expense=expenseRepo.findById(expenseId);
+    ) throws Exception {
 
-        if(expense.get()==null){
-            throw new Exception("Expense Not Found");
-        }
+        Expense expense = expenseRepo.findById(expenseId)
+                .orElseThrow(() -> new Exception("Expense Not Found"));
 
-        Admin admin=adminRepo.getById(adminId);
+        Admin admin = adminRepo.findById(adminId)
+                .orElseThrow(() -> new Exception("Admin not found"));
 
-        if(admin==null){
-            throw new Exception("Admin not found");
-        }
+        ExpenseStatus oldStatus = expense.getStatus();
 
-        expense.get().setStatus(ExpenseStatus.APPROVED);
-        expense.get().setRemarks(expenseApproval.getRemarks());
+        expense.setStatus(ExpenseStatus.APPROVED);
+        expense.setApprovedBy(admin);
+        expense.setExpenseDate(LocalDate.now());
+        expense.setRemarks(expenseApproval.getRemarks());
 
-        expenseRepo.save(expense.get());
+        expenseRepo.save(expense);
 
-        return Map.of("message","Updated Successfully");
+        auditService.logExpenseAction(
+                expense,
+                admin,
+                oldStatus,
+                ExpenseStatus.APPROVED,
+                "APPROVED",
+                expenseApproval.getRemarks()
+        );
+
+        return Map.of("message", "Updated Successfully");
     }
 
-    public Map<String,String > rejectExpense(
+    public Map<String, String> rejectExpense(
             Long expenseId,
             Long adminId,
             ExpenseApproval expenseApproval
-    ) throws Exception{
-        Optional<Expense> expense=expenseRepo.findById(expenseId);
+    ) throws Exception {
 
-        if(expense.get()==null){
-            throw new Exception("Expense Not Found");
-        }
+        Expense expense = expenseRepo.findById(expenseId)
+                .orElseThrow(() -> new Exception("Expense Not Found"));
 
-        Admin admin=adminRepo.getById(adminId);
+        Admin admin = adminRepo.findById(adminId)
+                .orElseThrow(() -> new Exception("Admin not found"));
 
-        if(admin==null){
-            throw new Exception("Admin not found");
-        }
+        ExpenseStatus oldStatus = expense.getStatus();
 
-        expense.get().setStatus(ExpenseStatus.REJECTED);
-        expense.get().setRemarks(expenseApproval.getRemarks());
+        expense.setStatus(ExpenseStatus.REJECTED);
+        expense.setRemarks(expenseApproval.getRemarks());
+        expense.setApprovedBy(admin);
+        expense.setExpenseDate(LocalDate.now());
 
-        expenseRepo.save(expense.get());
+        expenseRepo.save(expense);
 
-        return Map.of("message","Updated Successfully");
+        auditService.logExpenseAction(
+                expense,
+                admin,
+                oldStatus,
+                ExpenseStatus.REJECTED,
+                "REJECTED",
+                expenseApproval.getRemarks()
+        );
+
+        return Map.of("message", "Updated Successfully");
     }
 
     public Page<ExpenseResponse> getAllExpenses(Pageable pageable) {
