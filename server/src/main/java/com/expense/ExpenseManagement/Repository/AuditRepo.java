@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface AuditRepo extends JpaRepository<AuditLog,Long> {
@@ -144,5 +145,37 @@ public interface AuditRepo extends JpaRepository<AuditLog,Long> {
         WHERE ad.admin_id = :adminId
         """)
     Page<AuditResponse> getAdminAudit(Integer adminId, Pageable pageable);
+
+    @Query("""
+        SELECT COALESCE(SUM(a.gstAmount),0)
+        FROM AuditLog a
+        WHERE a.employee.employeeId=:employeeId
+        """)
+    BigDecimal gst(Integer employeeId);
+
+    @Query("""
+        SELECT COALESCE(SUM(a.tdsAmount),0)
+        FROM AuditLog a
+        WHERE a.employee.employeeId=:employeeId
+        """)
+    BigDecimal tds(Integer employeeId);
+
+    @Query("""
+            SELECT COALESCE(SUM(a.gstAmount),0)
+            FROM AuditLog a
+            """)
+    BigDecimal getTotalGST();
+
+    @Query("""
+            SELECT COALESCE(SUM(a.tdsAmount),0)
+            FROM AuditLog a
+            """)
+    BigDecimal getTotalTDS();
+
+    @Query("""
+            SELECT COALESCE(SUM(a.netExpense),0)
+            FROM AuditLog a
+            """)
+    BigDecimal getNetExpense();
 
 }

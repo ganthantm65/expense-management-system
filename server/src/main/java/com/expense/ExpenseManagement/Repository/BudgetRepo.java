@@ -107,4 +107,28 @@ public interface BudgetRepo extends JpaRepository<Budget, Integer> {
     ORDER BY b.department
 """)
     List<BudgetResponse> getBudgetReport();
+
+    @Query("""
+            SELECT COUNT(b)
+            FROM Budget b
+            """)
+    Long getTotalBudgets();
+
+    @Query("""
+            SELECT COALESCE(SUM(b.monthlyLimit),0)
+            FROM Budget b
+            """)
+    Double getTotalBudgetAmount();
+
+    @Query("""
+            SELECT COALESCE(SUM(b.currentSpent),0)
+            FROM Budget b
+            """)
+    Double getCurrentBudgetUsed();
+
+    @Query("""
+            SELECT COALESCE(SUM(b.monthlyLimit-b.currentSpent),0)
+            FROM Budget b
+            """)
+    Double getRemainingBudget();
 }
