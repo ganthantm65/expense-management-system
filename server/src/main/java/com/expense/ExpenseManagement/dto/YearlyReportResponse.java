@@ -16,6 +16,6 @@ public class YearlyReportResponse {
 
     private BigDecimal totalTDS;
 
-    private List<MonthlySummaryDTO> months;
+    private List<MonthlySummary> months;
 
 }

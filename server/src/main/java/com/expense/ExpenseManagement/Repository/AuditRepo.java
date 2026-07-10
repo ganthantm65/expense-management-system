@@ -178,4 +178,76 @@ public interface AuditRepo extends JpaRepository<AuditLog,Long> {
             """)
     BigDecimal getNetExpense();
 
+    @Query("""
+        SELECT COALESCE(SUM(a.gstAmount),0)
+        FROM AuditLog a
+        WHERE a.employee.employeeId=:employeeId
+        AND MONTH(a.changedAt)=:month
+        AND YEAR(a.changedAt)=:year
+        """)
+    BigDecimal monthlyGST(
+            Integer employeeId,
+            Integer month,
+            Integer year
+    );
+
+    @Query("""
+        SELECT COALESCE(SUM(a.tdsAmount),0)
+        FROM AuditLog a
+        WHERE a.employee.employeeId=:employeeId
+        AND MONTH(a.changedAt)=:month
+        AND YEAR(a.changedAt)=:year
+        """)
+    BigDecimal monthlyTDS(
+            Integer employeeId,
+            Integer month,
+            Integer year
+    );
+
+    @Query("""
+        SELECT COALESCE(SUM(a.deductibleAmount),0)
+        FROM AuditLog a
+        WHERE a.employee.employeeId=:employeeId
+        AND MONTH(a.changedAt)=:month
+        AND YEAR(a.changedAt)=:year
+        """)
+    BigDecimal monthlyDeductible(
+            Integer employeeId,
+            Integer month,
+            Integer year
+    );
+    @Query("""
+        SELECT COALESCE(SUM(a.netExpense),0)
+        FROM AuditLog a
+        WHERE a.employee.employeeId=:employeeId
+        AND MONTH(a.changedAt)=:month
+        AND YEAR(a.changedAt)=:year
+        """)
+    BigDecimal monthlyNetExpense(
+            Integer employeeId,
+            Integer month,
+            Integer year
+    );
+
+    @Query("""
+        SELECT COALESCE(SUM(a.gstAmount),0)
+        FROM AuditLog a
+        WHERE a.employee.employeeId=:employeeId
+        AND YEAR(a.changedAt)=:year
+        """)
+    BigDecimal yearlyGST(
+            Integer employeeId,
+            Integer year
+    );
+
+    @Query("""
+SELECT COALESCE(SUM(a.tdsAmount),0)
+FROM AuditLog a
+WHERE a.employee.employeeId=:employeeId
+AND YEAR(a.changedAt)=:year
+""")
+    BigDecimal yearlyTDS(
+            Integer employeeId,
+            Integer year
+    );
 }

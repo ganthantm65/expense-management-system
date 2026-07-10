@@ -263,7 +263,7 @@ public class ExpenseService {
         expense.setStatus(ExpenseStatus.REJECTED);
         expense.setRemarks(expenseApproval.getRemarks());
         expense.setApprovedBy(admin);
-        expense.setExpenseDate(LocalDate.now());
+        expense.setExpenseDate(LocalDate.from(LocalDateTime.now()));
 
         expenseRepo.save(expense);
 

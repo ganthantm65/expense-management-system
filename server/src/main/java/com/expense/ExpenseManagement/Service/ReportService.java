@@ -4,9 +4,7 @@ import com.expense.ExpenseManagement.Repository.AuditRepo;
 import com.expense.ExpenseManagement.Repository.BudgetRepo;
 import com.expense.ExpenseManagement.Repository.EmployeeRepo;
 import com.expense.ExpenseManagement.Repository.ExpenseRepo;
-import com.expense.ExpenseManagement.dto.DashboardResponse;
-import com.expense.ExpenseManagement.dto.EmployeeDashboardResponse;
-import com.expense.ExpenseManagement.dto.ExpenseResponse;
+import com.expense.ExpenseManagement.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -121,6 +119,79 @@ public class ReportService {
 
         response.setTotalTDS(
                 auditRepo.getTotalTDS());
+
+        return response;
+    }
+    public MonthlyReportResponse getEmployeeMonthlyReport(
+            Integer employeeId,
+            Integer month,
+            Integer year) {
+
+        MonthlyReportResponse response = new MonthlyReportResponse();
+
+        response.setEmployeeName(
+                employeeRepo.findById(employeeId).get().getEmployeeName());
+
+        response.setMonth(month);
+        response.setYear(year);
+
+        response.setTotalExpense(
+                expenseRepo.monthlyExpense(employeeId, month, year));
+
+        response.setApprovedExpenses(
+                expenseRepo.monthlyApprovedExpenses(employeeId, month, year));
+
+        response.setRejectedExpenses(
+                expenseRepo.monthlyRejectedExpenses(employeeId, month, year));
+
+        response.setPendingExpenses(
+                expenseRepo.monthlyPendingExpenses(employeeId, month, year));
+
+        response.setGst(
+                auditRepo.monthlyGST(employeeId, month, year));
+
+        response.setTds(
+                auditRepo.monthlyTDS(employeeId, month, year));
+
+        response.setDeductible(
+                auditRepo.monthlyDeductible(employeeId, month, year));
+
+        response.setNetExpense(
+                auditRepo.monthlyNetExpense(employeeId, month, year));
+
+        response.setExpenses(
+                expenseRepo.monthlyExpenseList(employeeId, month, year));
+
+        return response;
+    }
+    public YearlyReportResponse getEmployeeYearlyReport(
+            Integer employeeId,
+            Integer year) {
+
+        YearlyReportResponse response =
+                new YearlyReportResponse();
+
+        response.setYear(year);
+
+        response.setTotalExpense(
+                expenseRepo.yearlyExpense(
+                        employeeId,
+                        year));
+
+        response.setTotalGST(
+                auditRepo.yearlyGST(
+                        employeeId,
+                        year));
+
+        response.setTotalTDS(
+                auditRepo.yearlyTDS(
+                        employeeId,
+                        year));
+
+        response.setMonths(
+                expenseRepo.getMonthlySummary(
+                        employeeId,
+                        year));
 
         return response;
     }

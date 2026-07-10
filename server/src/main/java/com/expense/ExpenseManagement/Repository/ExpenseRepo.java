@@ -2,6 +2,7 @@ package com.expense.ExpenseManagement.Repository;
 
 import com.expense.ExpenseManagement.Model.Expense;
 import com.expense.ExpenseManagement.dto.ExpenseResponse;
+import com.expense.ExpenseManagement.dto.MonthlySummary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -209,4 +210,92 @@ public interface ExpenseRepo extends JpaRepository<Expense, Long> {
             FROM Expense e
             """)
     BigDecimal getTotalExpenseAmount();
+
+    @Query("""
+        SELECT COUNT(e)
+        FROM Expense e
+        WHERE e.employee.employeeId=:employeeId
+        AND e.status='APPROVED'
+        AND MONTH(e.expenseDate)=:month
+        AND YEAR(e.expenseDate)=:year
+        """)
+    Long monthlyApprovedExpenses(
+            Integer employeeId,
+            Integer month,
+            Integer year
+    );
+
+    @Query("""
+        SELECT COUNT(e)
+        FROM Expense e
+        WHERE e.employee.employeeId=:employeeId
+        AND e.status='REJECTED'
+        AND MONTH(e.expenseDate)=:month
+        AND YEAR(e.expenseDate)=:year
+        """)
+    Long monthlyRejectedExpenses(
+            Integer employeeId,
+            Integer month,
+            Integer year
+    );
+
+    @Query("""
+        SELECT COUNT(e)
+        FROM Expense e
+        WHERE e.employee.employeeId=:employeeId
+        AND e.status='SUBMITTED'
+        AND MONTH(e.expenseDate)=:month
+        AND YEAR(e.expenseDate)=:year
+        """)
+    Long monthlyPendingExpenses(
+            Integer employeeId,
+            Integer month,
+            Integer year
+    );
+
+    @Query("""
+        SELECT new com.expense.ExpenseManagement.dto.ExpenseResponse(
+            e.expenseId,
+            e.employee.employeeName,
+            e.category,
+            e.amount,
+            e.description,
+            e.expenseDate,
+            e.status,
+            e.receiptUrl,
+            a.adminName,
+            e.approvedDate,
+            e.remarks
+        )
+        FROM Expense e
+        LEFT JOIN e.approvedBy a
+        WHERE e.employee.employeeId=:employeeId
+        AND MONTH(e.expenseDate)=:month
+        AND YEAR(e.expenseDate)=:year
+        ORDER BY e.expenseDate DESC
+        """)
+    List<ExpenseResponse> monthlyExpenseList(
+            Integer employeeId,
+            Integer month,
+            Integer year
+    );
+
+    @Query("""
+        SELECT new com.expense.ExpenseManagement.dto.MonthlySummary(
+            MONTH(e.expenseDate),
+            COALESCE(SUM(e.amount),0),
+            COALESCE(SUM(a.gstAmount),0),
+            COALESCE(SUM(a.tdsAmount),0)
+        )
+        FROM Expense e
+        LEFT JOIN AuditLog a
+        ON a.expense.expenseId = e.expenseId
+        WHERE e.employee.employeeId = :employeeId
+        AND YEAR(e.expenseDate) = :year
+        GROUP BY MONTH(e.expenseDate)
+        ORDER BY MONTH(e.expenseDate)
+        """)
+    List<MonthlySummary> getMonthlySummary(
+            Integer employeeId,
+            Integer year);
 }
