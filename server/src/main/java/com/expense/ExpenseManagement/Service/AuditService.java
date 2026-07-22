@@ -43,7 +43,11 @@ public class AuditService {
         audit.setAction(action);
         audit.setOldStatus(oldStatus);
         audit.setNewStatus(newStatus);
-        audit.setChangedBy(admin.getAdminName());
+        if (admin != null) {
+            audit.setChangedBy(admin.getAdminName());
+        } else {
+            audit.setChangedBy(expense.getEmployee().getEmployeeName());
+        }
         audit.setChangedAt(LocalDateTime.now());
         audit.setRemarks(remarks);
 

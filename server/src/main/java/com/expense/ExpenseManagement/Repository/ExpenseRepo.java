@@ -298,4 +298,18 @@ public interface ExpenseRepo extends JpaRepository<Expense, Long> {
     List<MonthlySummary> getMonthlySummary(
             Integer employeeId,
             Integer year);
+
+    @Query("""
+    SELECT COALESCE(SUM(e.amount),0)
+    FROM Expense e
+    WHERE e.employee.department = :department
+    AND e.status = com.expense.ExpenseManagement.Model.ExpenseStatus.APPROVED
+    AND MONTH(e.expenseDate) = :month
+    AND YEAR(e.expenseDate) = :year
+    """)
+        Double calculateSpent(
+                String department,
+                int month,
+                int year
+        );
 }

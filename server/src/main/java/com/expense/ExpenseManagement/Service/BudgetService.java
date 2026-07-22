@@ -2,6 +2,7 @@
 
     import com.expense.ExpenseManagement.Model.Budget;
     import com.expense.ExpenseManagement.Repository.BudgetRepo;
+    import com.expense.ExpenseManagement.Repository.ExpenseRepo;
     import com.expense.ExpenseManagement.dto.BudgetReport;
     import com.expense.ExpenseManagement.dto.BudgetRequest;
     import com.expense.ExpenseManagement.dto.BudgetResponse;
@@ -21,6 +22,9 @@
     public class BudgetService {
         @Autowired
         private BudgetRepo budgetRepo;
+
+        @Autowired
+        private ExpenseRepo expenseRepo;
 
         public Map<String,String> createBudget(BudgetRequest request){
             Budget budget=new Budget();
@@ -58,10 +62,32 @@
             return Map.of("message","updated successfully");
         }
 
-        public Page<BudgetResponse> getAllBudgets(Pageable pageable){
-            return budgetRepo.getAllBudgets(pageable);
-        }
+        public Page<BudgetResponse> getAllBudgets(Pageable pageable) {
 
+            Page<Budget> budgets = budgetRepo.findAll(pageable);
+
+            return budgets.map(budget -> {
+
+                Double spent = expenseRepo.calculateSpent(
+                        budget.getDepartment(),
+                        Integer.parseInt(budget.getMonth()),
+                        Integer.parseInt(budget.getYear())
+                );
+
+                BudgetResponse response = new BudgetResponse();
+
+                response.setBudgetId(budget.getBudgetId());
+                response.setDepartment(budget.getDepartment());
+                response.setMonthlyLimit(budget.getMonthlyLimit());
+                response.setWarningLimit(budget.getWarningLimit());
+                response.setMonth(budget.getMonth());
+                response.setYear(budget.getYear());
+
+                response.setCurrentSpent(spent);
+
+                return response;
+            });
+        }
         public List<BudgetResponse> findByYear(String year){
             return budgetRepo.findByYear(year);
         }
@@ -79,11 +105,23 @@
                                       Integer year,
                                       Double amount) {
 
+            System.out.println("Department : " + department);
+            System.out.println("Month      : " + month);
+            System.out.println("Year       : " + year);
+            System.out.println("Amount     : " + amount);
+
             Optional<BudgetResponse> budget =
                     budgetRepo.findBudget(
                             department,
                             String.valueOf(month),
                             String.valueOf(year));
+
+            System.out.println("Budget Found : " + budget.isPresent());
+
+            if (budget.isPresent()) {
+                System.out.println("Limit : " + budget.get().getMonthlyLimit());
+                System.out.println("Spent : " + budget.get().getCurrentSpent());
+            }
 
             if (budget.isEmpty()) {
                 return false;

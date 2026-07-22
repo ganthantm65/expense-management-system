@@ -41,9 +41,12 @@ public class AuthController {
 
             String token = jwtService.generateToken(userDetails);
 
+            Admin admin=authService.findAdminByEmail(userDetails.getUsername());
+
             LoginResponse response = LoginResponse.builder()
                     .token(token)
                     .email(userDetails.getUsername())
+                    .id(admin.getAdmin_id())
                     .role("ADMIN")
                     .message("Admin Login Successful")
                     .build();

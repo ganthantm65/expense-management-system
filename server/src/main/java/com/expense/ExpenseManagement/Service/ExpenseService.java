@@ -42,9 +42,6 @@ public class ExpenseService {
     @Autowired
     private AuditService auditService;
 
-    /*====================================================
-                    CREATE EXPENSE
-    ====================================================*/
 
     @Transactional
     public ExpenseResponse createExpense(
@@ -87,6 +84,7 @@ public class ExpenseService {
         expense.setCreatedAt(LocalDateTime.now());
         expense.setUpdatedAt(LocalDateTime.now());
 
+
         expenseRepo.save(expense);
 
         auditService.logExpenseAction(
@@ -112,9 +110,6 @@ public class ExpenseService {
         return response;
     }
 
-    /*====================================================
-                    UPDATE EXPENSE
-    ====================================================*/
 
     @Transactional
     public Map<String,String> updateExpense(
@@ -163,9 +158,6 @@ public class ExpenseService {
         );
     }
 
-    /*====================================================
-                    DELETE EXPENSE
-    ====================================================*/
 
     @Transactional
     public Map<String,String> deleteExpense(
@@ -227,9 +219,9 @@ public class ExpenseService {
 
         ExpenseStatus oldStatus = expense.getStatus();
 
+        expense.setApprovedDate(LocalDateTime.now());
         expense.setStatus(ExpenseStatus.APPROVED);
         expense.setApprovedBy(admin);
-        expense.setExpenseDate(LocalDate.now());
         expense.setRemarks(expenseApproval.getRemarks());
 
         expenseRepo.save(expense);
@@ -263,7 +255,7 @@ public class ExpenseService {
         expense.setStatus(ExpenseStatus.REJECTED);
         expense.setRemarks(expenseApproval.getRemarks());
         expense.setApprovedBy(admin);
-        expense.setExpenseDate(LocalDate.from(LocalDateTime.now()));
+        expense.setApprovedDate(LocalDateTime.now());
 
         expenseRepo.save(expense);
 
