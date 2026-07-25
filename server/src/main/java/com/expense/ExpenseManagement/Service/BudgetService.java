@@ -1,11 +1,13 @@
     package com.expense.ExpenseManagement.Service;
 
     import com.expense.ExpenseManagement.Model.Budget;
+    import com.expense.ExpenseManagement.Model.Expense;
     import com.expense.ExpenseManagement.Repository.BudgetRepo;
     import com.expense.ExpenseManagement.Repository.ExpenseRepo;
     import com.expense.ExpenseManagement.dto.BudgetReport;
     import com.expense.ExpenseManagement.dto.BudgetRequest;
     import com.expense.ExpenseManagement.dto.BudgetResponse;
+    import jakarta.transaction.Transactional;
     import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.data.domain.Page;
     import org.springframework.data.domain.Pageable;
@@ -159,6 +161,29 @@
             }
 
             return Map.of("message", warning.toString());
+        }
+
+        @Transactional
+        public void updateBudgetSpent(Expense expense) {
+
+            Optional<Budget> budget =
+                    budgetRepo.findByDepartmentAndMonthAndYear(
+                            expense.getEmployee().getDepartment(),
+                            String.valueOf(expense.getExpenseDate().getMonthValue()),
+                            String.valueOf(expense.getExpenseDate().getYear())
+                    );
+
+            if (budget.isPresent()) {
+
+                Budget b = budget.get();
+
+                b.setCurrentSpent(
+                        b.getCurrentSpent()
+                                + expense.getAmount().doubleValue()
+                );
+
+                budgetRepo.save(b);
+            }
         }
 
         public List<BudgetReport> generateReport() {

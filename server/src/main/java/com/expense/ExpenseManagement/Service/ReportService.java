@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class ReportService {
@@ -192,6 +193,96 @@ public class ReportService {
                 expenseRepo.getMonthlySummary(
                         employeeId,
                         year));
+
+        return response;
+    }
+
+    public AdminMonthlyReport getAdminMonthlyReport(
+            Integer month,
+            Integer year) {
+
+        AdminMonthlyReport response =
+                new AdminMonthlyReport();
+
+        response.setMonth(month);
+        response.setYear(year);
+
+        response.setTotalExpense(
+                expenseRepo.getTotalExpenseAmount());
+
+        response.setApproved(
+                expenseRepo.getApprovedExpenses());
+
+        response.setRejected(
+                expenseRepo.getRejectedExpenses());
+
+        response.setPending(
+                expenseRepo.countPendingExpenses());
+
+        response.setTotalGST(
+                auditRepo.getTotalGST());
+
+        response.setTotalTDS(
+                auditRepo.getTotalTDS());
+
+        response.setBudget(
+                budgetRepo.getTotalBudgetAmount());
+
+        response.setSpent(
+                budgetRepo.getCurrentBudgetUsed());
+
+        response.setRemaining(
+                budgetRepo.getRemainingBudget());
+
+        response.setRecentExpenses(
+                expenseRepo.getAllExpenses(
+                        PageRequest.of(0, 10)
+                ).getContent());
+
+        return response;
+    }
+    public AdminYearlyReport getAdminYearlyReport(
+            Integer year) {
+
+        AdminYearlyReport response =
+                new AdminYearlyReport();
+
+        response.setYear(year);
+
+        response.setTotalExpense(
+                expenseRepo.getTotalExpenseAmount());
+
+        response.setTotalGST(
+                auditRepo.getTotalGST());
+
+        response.setTotalTDS(
+                auditRepo.getTotalTDS());
+
+        response.setTotalBudget(
+                budgetRepo.getTotalBudgetAmount());
+
+        return response;
+    }
+
+    public List<BudgetResponse> getBudgetReport() {
+
+        return budgetRepo.getBudgetReport();
+
+    }
+
+    public TaxReport getTaxReport() {
+
+        TaxReport response =
+                new TaxReport();
+
+        response.setGst(
+                auditRepo.getTotalGST());
+
+        response.setTds(
+                auditRepo.getTotalTDS());
+
+        response.setNetExpense(
+                auditRepo.getNetExpense());
 
         return response;
     }

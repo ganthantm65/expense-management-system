@@ -131,4 +131,10 @@ public interface BudgetRepo extends JpaRepository<Budget, Integer> {
             FROM Budget b
             """)
     Double getRemainingBudget();
+
+    Optional<Budget> findByDepartmentAndMonthAndYear(
+            String department,
+            String month,
+            String year
+    );
 }

@@ -226,6 +226,8 @@ public class ExpenseService {
 
         expenseRepo.save(expense);
 
+        budgetService.updateBudgetSpent(expense);
+
         auditService.logExpenseAction(
                 expense,
                 admin,

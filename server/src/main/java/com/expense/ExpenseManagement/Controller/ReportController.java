@@ -1,13 +1,12 @@
 package com.expense.ExpenseManagement.Controller;
 
 import com.expense.ExpenseManagement.Service.ReportService;
-import com.expense.ExpenseManagement.dto.DashboardResponse;
-import com.expense.ExpenseManagement.dto.EmployeeDashboardResponse;
-import com.expense.ExpenseManagement.dto.MonthlyReportResponse;
-import com.expense.ExpenseManagement.dto.YearlyReportResponse;
+import com.expense.ExpenseManagement.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -53,5 +52,38 @@ public class ReportController {
                 reportService.getEmployeeYearlyReport(
                         employeeId,
                         year));
+    }
+
+    @GetMapping("/admin/reports/monthly")
+    public ResponseEntity<AdminMonthlyReport> getAdminMonthlyReport(
+            @RequestParam Integer month,
+            @RequestParam Integer year) {
+
+        return ResponseEntity.ok(
+                reportService.getAdminMonthlyReport(
+                        month,
+                        year));
+    }
+
+    @GetMapping("/admin/reports/yearly")
+    public ResponseEntity<AdminYearlyReport> getAdminYearlyReport(
+            @RequestParam Integer year) {
+
+        return ResponseEntity.ok(
+                reportService.getAdminYearlyReport(year));
+    }
+
+    @GetMapping("/admin/reports/budget")
+    public ResponseEntity<List<BudgetResponse>> getBudgetReport() {
+
+        return ResponseEntity.ok(
+                reportService.getBudgetReport());
+    }
+
+    @GetMapping("/admin/reports/tax")
+    public ResponseEntity<TaxReport> getTaxReport() {
+
+        return ResponseEntity.ok(
+                reportService.getTaxReport());
     }
 }
