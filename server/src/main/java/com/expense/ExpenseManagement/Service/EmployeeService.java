@@ -110,9 +110,12 @@ public class EmployeeService {
     public Map<String,String> updatedEmployeeStatus(int id,String status)throws Exception{
         Employee employee=employeeRepo.findById(id);
         if (employee==null){
+            System.out.println("not found");
             throw new Exception("Employee Not Found");
         }
         employee.setStatus(status);
+
+        employeeRepo.save(employee);
 
         return Map.of("message","Status Updated Successfully");
     }

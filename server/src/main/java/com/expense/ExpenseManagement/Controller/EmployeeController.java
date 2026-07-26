@@ -5,6 +5,7 @@ import com.expense.ExpenseManagement.Service.EmployeeService;
 import com.expense.ExpenseManagement.dto.EmployeeProfile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -58,11 +59,13 @@ public class EmployeeController {
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<EmployeeProfile>> getAllEmployees() {
         return ResponseEntity.ok(employeeService.getAllEmployeeProfiles());
     }
 
     @GetMapping("/{name}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getEmployeeByName(@RequestParam String name){
         try{
             return ResponseEntity.ok().body(employeeService.getEmployeeByName(name));
@@ -73,6 +76,7 @@ public class EmployeeController {
     }
 
     @PutMapping("/{id}/status")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateEmployeeStatus(
             @PathVariable int id,
             @RequestParam String status
