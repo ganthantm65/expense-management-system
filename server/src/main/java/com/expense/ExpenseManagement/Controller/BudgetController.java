@@ -44,7 +44,6 @@ public class BudgetController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<BudgetResponse>> getAllBudgets(
             @PageableDefault(size = 10, sort = "createdAt") Pageable pageable) {
 
@@ -54,7 +53,6 @@ public class BudgetController {
     }
 
     @GetMapping("/{budgetId}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BudgetResponse> getBudgetById(
             @PathVariable Integer budgetId) {
 
@@ -64,7 +62,6 @@ public class BudgetController {
     }
 
     @GetMapping("/year/{year}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<BudgetResponse>> getBudgetByYear(
             @PathVariable String year) {
 
@@ -74,7 +71,6 @@ public class BudgetController {
     }
 
     @GetMapping("/department/{department}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<BudgetResponse>> getBudgetByDepartment(
             @PathVariable String department) {
 

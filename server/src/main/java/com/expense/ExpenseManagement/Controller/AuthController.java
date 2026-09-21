@@ -45,7 +45,7 @@ public class AuthController {
 
             LoginResponse response = LoginResponse.builder()
                     .token(token)
-                    .email(userDetails.getUsername())
+                    .name(admin.getAdminName())
                     .id(admin.getAdmin_id())
                     .role("ADMIN")
                     .message("Admin Login Successful")
@@ -72,13 +72,20 @@ public class AuthController {
                     )
             );
 
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            UserDetails userDetails =
+                    (UserDetails) authentication.getPrincipal();
 
             String token = jwtService.generateToken(userDetails);
+
+            Employee employee = authService.findEmployeeByEmail(
+                    userDetails.getUsername()
+            );
 
             LoginResponse response = LoginResponse.builder()
                     .token(token)
                     .email(userDetails.getUsername())
+                    .name(employee.getEmployeeName())
+                    .id(employee.getEmployeeId())
                     .role("EMPLOYEE")
                     .message("Employee Login Successful")
                     .build();
