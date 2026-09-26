@@ -44,24 +44,39 @@
             return Map.of("message","Budget created successfully");
         }
 
-        public Map<String,String> updatedBudget(BudgetRequest request,Integer budgetId){
-            Optional<Budget> budget=budgetRepo.findById(budgetId);
+        public Map<String, String> updatedBudget(BudgetRequest request, Integer budgetId) {
 
-            if(request.getDepartment()!=null){
-                budget.get().setDepartment(request.getDepartment());
-            }else if (request.getYear()!=null){
-                budget.get().setYear(String.valueOf(request.getYear()));
-            }else if(request.getWarningLimit()!=null){
-                budget.get().setWarningLimit(request.getWarningLimit());
-            }else if(request.getMonthlyLimit()!=null){
-                budget.get().setMonthlyLimit(request.getMonthlyLimit());
-            } else if (request.getMonth()!=null) {
-                budget.get().setMonth(String.valueOf(request.getMonth()));
+            Optional<Budget> optionalBudget = budgetRepo.findById(budgetId);
+
+            if (optionalBudget.isEmpty()) {
+                return Map.of("message", "Budget not found");
             }
 
-            budgetRepo.save(budget.get());
+            Budget budget = optionalBudget.get();
 
-            return Map.of("message","updated successfully");
+            if (request.getDepartment() != null) {
+                budget.setDepartment(request.getDepartment());
+            }
+
+            if (request.getYear() != null) {
+                budget.setYear(String.valueOf(request.getYear()));
+            }
+
+            if (request.getWarningLimit() != null) {
+                budget.setWarningLimit(request.getWarningLimit());
+            }
+
+            if (request.getMonthlyLimit() != null) {
+                budget.setMonthlyLimit(request.getMonthlyLimit());
+            }
+
+            if (request.getMonth() != null) {
+                budget.setMonth(String.valueOf(request.getMonth()));
+            }
+
+            budgetRepo.save(budget);
+
+            return Map.of("message", "Budget updated successfully");
         }
 
         public Page<BudgetResponse> getAllBudgets(Pageable pageable) {
